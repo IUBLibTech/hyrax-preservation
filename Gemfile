@@ -41,3 +41,7 @@ else
   end
 end
 # END ENGINE_CART BLOCK
+
+
+# Local mods to Gemfile to pull in release candidate for CurationConcerns
+gem 'curation_concerns', github: 'projecthydra/curation_concerns', ref: 'v2.0.0.rc2'
