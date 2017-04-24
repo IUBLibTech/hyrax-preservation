@@ -1,0 +1,20 @@
+<%
+# NOTE: This overrides Hyrax's
+# app/views/catalog/_index_header_list_default.html.erb which (at the time of
+# this writing) only calls `document.title_or_label`, where `document` is a
+# `SolrDocument` instance. We need to use a presenter object, because we use a
+# small bit of logic to return the title of a search result. Hyrax will
+# probably be upgraded to use a presenter in it's own version of this view
+# partial in the near future, but until then, we override it here.
+
+# Furthermore, since we are using our own custom presenter, and our own custom
+# view partial, configuring the title field using `config.index.title_file` in
+# the EventsController's `configure_blacklight` block has no effect here. Instead,
+# we're just overriding the default index presenter, giving it a special
+# method, and calling that special method from this overridden partial.
+
+# Confused yet? Yeah, me too.
+%>
+  <h2>
+    <%= link_to index_presenter(document).search_result_title, document %>
+  </h2>
