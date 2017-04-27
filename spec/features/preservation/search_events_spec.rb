@@ -19,21 +19,26 @@ describe 'Preservation Events search results' do
     it 'displays the PREMIS event type label for the title' do
       # Make a regex that checks for any PREMIS event type label.
       regex = /(#{Preservation::PremisEventType.all.map(&:label).join('|')})/
-      expect(page).to have_css('h4.index_title a', text: regex)
+      expect(page).to have_css('div#search-results h2 a', text: regex)
     end
 
     it 'displays the PREMIS agent' do
-      # TODO: avoid using hardcoded dynamic solr suffix here
-      expect(page).to have_css('dt.blacklight-premis_agent_ssim', count: 10)
+      # TODO: Better tests for verifying display of search result fields.
+      expect(page).to have_css('div#search-results div.row table tr th span.attribute-label', text: "Agent", count: 10)
+      basic_email_regex = /.+@.+\..+/
+      expect(page).to have_css('div#search-results div.row table tr td', text: basic_email_regex, count: 10)
     end
 
     it 'displays the date of the event' do
-      # TODO: avoid using hardcoded dynamic solr suffix here
-      expect(page).to have_css('dt.blacklight-premis_event_date_time_dtsim', count: 10)
+      # TODO: Better tests for verifying display of search result fields.
+      expect(page).to have_css('div#search-results div.row table tr th span.attribute-label', text: "Date", count: 10)
+      expect(page).to have_css('div#search-results div.row table tr td', text: /\d{4}\-\d{2}\-\d{2}/, count: 10)
     end
 
     it 'displays a link to the file' do
-      expect(page).to have_link('Example File', count: 10)
+      # TODO: Better tests for verifying display of search result fields.
+      expect(page).to have_css('div#search-results div.row table tr th span.attribute-label', text: "File", count: 10)
+      expect(page).to have_css('div#search-results div.row table tr td a', text: /.+/, count: 10)
     end
 
     context 'filters' do
@@ -67,7 +72,7 @@ describe 'Preservation Events search results' do
       end
 
       records_within_date_range.each do |record|
-        expect(page).to have_selector('dd', text: record.premis_event_date_time.first.year)
+        expect(page).to have_selector('td', text: record.premis_event_date_time.first.year)
       end
     end
 
@@ -123,12 +128,12 @@ describe 'Preservation Events search results' do
           premis_event_type = Preservation::PremisEventType.all.find { |premis_event_type| premis_event_type.uri == record.premis_event_type.first.id }
           premis_event_type.label
         end
-        expect(page).to have_selector('h4.index_title a', text: expected_text)
+        expect(page).to have_selector('div#search-results h2 a', text: expected_text)
       end
 
       # And ensure that none of the non-selected PREMIS event types show up
       (all_premis_event_types - selected_premis_event_types).each do |unselected_premis_event_type|
-        expect(page).to_not have_selector('h4.index_title a', text: unselected_premis_event_type.label)
+        expect(page).to_not have_selector('div#search-results h2 a', text: unselected_premis_event_type.label)
       end
     end
 
@@ -170,7 +175,7 @@ describe 'Preservation Events search results' do
     end
 
     it 'limits the results to those that match the submitted filter value for PREMIS agent', :focus do
-      expect(page).to have_selector('dd', text: example_email, count: 2)
+      expect(page).to have_selector('td', text: example_email, count: 2)
     end
 
     it 'does not clobber other filters when a new value is submitted for PREMIS agent' do

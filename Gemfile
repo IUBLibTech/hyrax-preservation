@@ -8,10 +8,11 @@ gemspec
 
 gem 'engine_cart'
 # BEGIN ENGINE_CART BLOCK
-# engine_cart: 1.0.1
+# engine_cart: 1.1.0
 # engine_cart stanza: 0.10.0
 # the below comes from engine_cart, a gem used to test this Rails engine gem in the context of a Rails app.
 file = File.expand_path('Gemfile', ENV['ENGINE_CART_DESTINATION'] || ENV['RAILS_ROOT'] || File.expand_path('.internal_test_app', File.dirname(__FILE__)))
+
 if File.exist?(file)
   begin
     eval_gemfile file
@@ -42,6 +43,9 @@ else
 end
 # END ENGINE_CART BLOCK
 
-
-# Local mods to Gemfile to pull in release candidate for CurationConcerns
-gem 'curation_concerns', github: 'projecthydra/curation_concerns', ref: 'v2.0.0.rc2'
+# Hyrax v1.0.0.rc1 is not available on rubygems.org yet, so need to pull from
+# Github.
+# NOTE: This needs to be copied to spec/test_app_templates/Gemfile.extra as
+# well in order for engine_cart to generate the test app with the correct
+# dependencies.
+gem 'hyrax', github: 'projecthydra-labs/hyrax', ref: 'v1.0.0.rc1'

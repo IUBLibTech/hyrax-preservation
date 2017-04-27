@@ -1,6 +1,6 @@
 if defined? Rails
   require "preservation/engine"
-  require 'curation_concerns'
+  require 'hyrax'
 end
 
 module Preservation

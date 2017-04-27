@@ -7,6 +7,7 @@ module Preservation
       #{config.root}/app/indexers
       #{config.root}/app/presenters
       #{config.root}/app/search_builders
+      #{config.root}/lib/preservation
     )
   end
 end

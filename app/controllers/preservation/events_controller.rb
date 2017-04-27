@@ -1,29 +1,36 @@
+require 'preservation/search_state'
+
 module Preservation
   class EventsController < ActionController::Base
     include Blacklight::Controller
     include Hydra::Controller::ControllerBehavior
     include Hydra::Catalog
+    include Hyrax::Controller
 
-    # TODO: WTF? Not adding these helpers causes `undefined variable or
-    # method` errors during rendering. These missing methods are defined in
-    # modules that are included within these helpers. But tracking it down was
-    # a pita, because I had to first go find where the methods were being
-    # defined within the Blacklight gem. Then I had to figure out why the
-    # modules weren't getting included. Then I had to figure out how to
-    # include them.
+    # Include Blacklight helpers that are needed to avoid breakage when using
+    # Blacklight views.
     helper CatalogHelper
     helper ComponentHelper
     helper LayoutHelper
-    # Override CurationConcerns::UrlHelper#url_for_document
-    helper_method :url_for_document
+
+    # Include Hyrax helpers that are needed to avoid breakage when rendering
+    # Hyrax views.
+    helper HyraxHelper
+
+    # Override Hyrax::UrlHelper#url_for_document
+    # helper_method :url_for_document
     helper_method :display_premis_agent
     helper_method :display_premis_event_date_time
     helper_method :display_related_file
 
-    # Adds CurationConcerns behaviors to the application controller.
-    include CurationConcerns::ApplicationControllerBehavior
-    include CurationConcerns::ThemedLayoutController
-    with_themed_layout 'catalog'
+    # TODO: We used to include CurationConcerns::ApplicationControllerBehavior
+    # here, but that module was merged into Sufia::Controller, which was later
+    # converted to Hyrax::Controller. But we're not sure if it's still needed.
+    # TODO: Determine whether or not we need to include Hyrax::Controller, and
+    # upadate (or delete) these commets accordingly.
+    # include Hyrax::Controller
+    include Hyrax::ThemedLayoutController
+    with_themed_layout '1_column'
 
     # Prevent CSRF attacks by raising an exception.
     # For APIs, you may want to use :null_session instead.
@@ -42,7 +49,11 @@ module Preservation
 
       # Index view config
       config.index.document_presenter_class = EventIndexPresenter
-      config.index.title_field = solr_name(:premis_event_type, :symbol)
+      # NOTE: setting `config.index.title_field` here has no effect, because
+      # we're currently overriding the presenter class, and the partial that
+      # would normally be looking for it. Instead, see the overridden partial
+      # in app/views/preservation/events/_index_header_list_default.html.erb
+      # and the EventIndexPresenter#search_result_title method.
       config.add_index_field solr_name(:hasEventRelatedObject, :symbol), label: "File", helper_method: :display_related_file
       config.add_index_field solr_name(:premis_event_date_time, :stored_searchable, type: :date), label: "Date", helper_method: :display_premis_event_date_time
       config.add_index_field solr_name(:premis_agent, :symbol), label: "Agent", helper_method: :display_premis_agent
@@ -69,13 +80,17 @@ module Preservation
 
     # Overrides CatalogController::UrlHelper#url_for_document. It would be
     # nice to put this method in our own Preservation::UrlHelper module but I
-    # couldn't get the helper to load after CurationConcerns::UrlHelper in
+    # couldn't get the helper to load after Hyrax::UrlHelper in
     # order to overwrite the #url_for_document method. NOTE: In any event,
     # this method needs to behave roughly the same way as
     # CurationCocerns::UrlHelper#url_for_document, so if that method changes
     # change this one accordingly.
-    def url_for_document(doc, _options = {})
-      polymorphic_path([preservation, doc])
+    # def url_for_document(doc, _options = {})
+    #   polymorphic_path([preservation, doc])
+    # end
+
+    def search_state
+      @search_state ||= Preservation::SearchState.new(self)
     end
 
     def display_premis_agent(opts={})
@@ -95,7 +110,7 @@ module Preservation
       # TODO: Is there a better way to fetch the FileSet ID and Title? This way is confusing.
       solr_doc = opts[:document]
       file_set_id = solr_doc[:hasEventRelatedObject_ssim].first
-      file_set_url = Rails.application.routes.url_helpers.curation_concerns_file_set_url(id: file_set_id, only_path: true)
+      file_set_url = Rails.application.routes.url_helpers.hyrax_file_set_path(id: file_set_id)
       file_set_title = solr_doc[Solrizer.solr_name(:related_file_title, :stored_searchable)].first
       "<a href='#{file_set_url}'>#{file_set_title}</a>".html_safe
     end
