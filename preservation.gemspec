@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     'lib/preservation/preservation_event_logger.rb'
   ]
 
-  s.add_dependency "hyrax"
+  s.add_dependency "hyrax", '~> 1.0.4'
   # TODO: We can remove the pinned jquery-ui-rails dep here after upgrading to
   # curation_concerns 1.7.0
   s.add_dependency "jquery-ui-rails", "~> 5.0.5"

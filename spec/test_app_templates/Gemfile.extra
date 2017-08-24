@@ -1,4 +1,0 @@
-source 'https://rubygems.org'
-
-# Local mods to Gemfile to pull in release candidate for Hyrax
-gem 'hyrax', github: 'projecthydra-labs/hyrax', ref: 'v1.0.0.rc1'
