@@ -90,7 +90,7 @@ module Preservation
     # end
 
     def search_state
-      @search_state ||= Preservation::SearchState.new(self)
+      @search_state ||= Preservation::SearchState.new(params, blacklight_config, self)
     end
 
     def display_premis_agent(opts={})
