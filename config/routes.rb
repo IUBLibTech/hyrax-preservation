@@ -1,3 +1,3 @@
-Preservation::Engine.routes.draw do
+Hyrax::Preservation::Engine.routes.draw do
   resources :events, only: [:index, :show]
 end
