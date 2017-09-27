@@ -58,6 +58,14 @@ module Hyrax
                                object.premis_event_date_time.first.strftime('%Y%m%d').to_i,
                                Solrizer::Descriptor.new(:long, :stored, :indexed))
           end
+
+          unless object.premis_event_outcome.empty?
+            # Index the PREMIS event outcome.
+            Solrizer.set_field(solr_doc,
+                               'premis_event_outcome',
+                               object.premis_event_outcome.first,
+                               :stored_searchable)
+          end
         end
       end
     end
