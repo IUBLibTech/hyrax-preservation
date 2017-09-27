@@ -4,7 +4,9 @@ module Hyrax
       include Blacklight::Solr::SearchBuilderBehavior
 
       self.default_processor_chain += [:only_models_for_preservation_events, :apply_premis_event_date_time_filter,
-                                       :apply_premis_event_type_filter, :apply_premis_agent_filter]
+                                       :apply_premis_event_type_filter, :apply_premis_agent_filter,
+                                       :apply_premis_event_related_object_filter]
+
 
       def only_models_for_preservation_events(solr_params)
         solr_params[:fq] ||= []
@@ -31,6 +33,13 @@ module Hyrax
         if premis_agent_filter
           solr_params[:fq] ||= []
           solr_params[:fq] << premis_agent_filter
+        end
+      end
+
+      def apply_premis_event_related_object_filter(solr_params)
+        if premis_event_related_object_filter
+          solr_params[:fq] ||= []
+          solr_params[:fq] << premis_event_related_object_filter
         end
       end
 
@@ -79,6 +88,15 @@ module Hyrax
           if blacklight_params['agent'].present?
             # TODO: sanitize URL parameters. Do not simply trust user input.
             "premis_agent_ssim:#{blacklight_params['agent']}"
+          end
+        end
+      end
+
+      def premis_event_related_object_filter
+        @premis_event_related_object_filter ||= begin
+          if blacklight_params['related_object'].present?
+            # TODO: sanitize URL parameters. Do not simply trust user input.
+            "hasEventRelatedObject_ssim:#{blacklight_params['related_object']}"
           end
         end
       end
