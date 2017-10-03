@@ -1,4 +1,5 @@
 # Default configuration for solr_wrapper in test environment
+version: 6.6.1
 instance_dir: tmp/solr-test
 port: 8985
 collection:
