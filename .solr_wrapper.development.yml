@@ -1,4 +1,5 @@
 # Default configuration for solr_wrapper in development environment
+version: 6.6.1
 instance_dir: tmp/solr-development
 port: 8983
 verbose: true
