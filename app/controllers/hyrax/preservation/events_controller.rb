@@ -23,6 +23,7 @@ module Hyrax
       helper_method :display_premis_agent
       helper_method :display_premis_event_date_time
       helper_method :display_related_file
+      helper_method :display_outcome
 
       # TODO: We used to include CurationConcerns::ApplicationControllerBehavior
       # here, but that module was merged into Sufia::Controller, which was later
@@ -58,12 +59,14 @@ module Hyrax
         config.add_index_field solr_name(:hasEventRelatedObject, :symbol), label: "File", helper_method: :display_related_file
         config.add_index_field solr_name(:premis_event_date_time, :stored_searchable, type: :date), label: "Date", helper_method: :display_premis_event_date_time
         config.add_index_field solr_name(:premis_agent, :symbol), label: "Agent", helper_method: :display_premis_agent
+        config.add_index_field solr_name(:premis_event_outcome, :stored_searchable), label: "Outcome", helper_method: :display_outcome
 
         # Show view config
         config.show.document_presenter_class = EventShowPresenter
         config.add_show_field solr_name(:premis_agent, :symbol), label: "PREMIS Agent"
         config.add_show_field solr_name(:premis_event_date_time, :stored_searchable, type: :date), label: "Date"
         config.add_show_field solr_name(:hasEventRelatedObject, :symbol), label: "File", helper_method: :display_related_file
+        config.add_show_field solr_name(:premis_event_outcome, :stored_searchable), label: "Outcome", helper_method: :display_outcome
 
         # Remove unused actions from the show view. Enabling these breaks the
         # show view because Blacklight generates urls that don't exist. Figuring
@@ -106,6 +109,11 @@ module Hyrax
         Date.parse(premis_event_date_time.to_s).strftime('%Y-%m-%d')
       end
 
+      def display_outcome(opts={})
+        solr_doc = opts[:document]
+        solr_doc[opts[:field]].first
+      end
+
       def display_related_file(opts={})
         # TODO: Is there a better way than having the controller send back HTML?
         # TODO: Is there a better way to fetch the FileSet ID and Title? This way is confusing.
@@ -125,7 +133,7 @@ module Hyrax
         # or the PreservationEventIndexer (in the hyrax-preservation gem) needs to have similar fallback logic
         # when indexing a representative name for the FileSet.
         file_set = ::FileSet.find(file_set_id)
-        file_set_title = file_set&.title&.first ||  file_set&.label || file_set&.filename&.first
+        file_set_title = file_set&.title&.first ||  file_set&.label || file_set&.file_name&.first
         "<a href='#{file_set_url}'>#{file_set_title}</a>".html_safe
       end
     end
