@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'fcrepo_wrapper', '~> 0.8'
   s.add_development_dependency "factory_girl_rails", '~> 4.8', '>= 4.8.0'
   s.add_development_dependency 'pry-rails', '~> 0.3', '>= 0.3.6'
-  s.add_development_dependency 'pry-byebug', '~> 0.3', '>= 0.3.6'
+  s.add_development_dependency 'pry-byebug', '~> 3.6', '>= 3.6.0'
   s.add_development_dependency 'launchy', '~> 2.4', '>= 2.4.3'
   s.add_development_dependency 'rb-readline', '~> 0.5'
 end
