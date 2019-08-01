@@ -8,6 +8,8 @@ FactoryGirl.define do
     premis_event_type { [Hyrax::Preservation::PremisEventType.all.sample.uri] }
     premis_event_date_time { [DateTime.now - rand(30000).hours] }
     premis_event_related_object { create(:file_set) }
+    premis_event_outcome { ['173126004d5f1b13e41a9f3f53ca3d81'] }
+
     sequence(:premis_agent) { |n| [::RDF::URI.new("mailto:premis_agent_#{n}@hydradam.org")] }
 
     after :build do |event, evaluator|

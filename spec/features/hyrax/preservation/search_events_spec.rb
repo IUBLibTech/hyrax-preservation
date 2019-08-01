@@ -41,6 +41,11 @@ describe 'Preservation Events search results' do
       expect(page).to have_css('div#search-results div.row table tr td a', text: /.+/, count: 10)
     end
 
+    it 'displays the outcome' do
+      expect(page).to have_css('div#search-results div.row table tr th span.attribute-label', text: "Outcome", count: 10)
+      expect(page).to have_css('div#search-results div.row table tr td', text: '173126004d5f1b13e41a9f3f53ca3d81', count: 10)
+    end
+
     context 'filters' do
       it 'has a search filter for date' do
         expect(page).to have_css('form#date_time_range_filter')
